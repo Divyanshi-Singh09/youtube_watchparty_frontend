@@ -107,17 +107,22 @@ export function PlaybackControls({
 
   return (
     <div className="controls-bar">
-      <button
-        type="button"
-        className="control-play-btn"
-        onClick={handleTogglePlayPause}
-        title={isPlaying ? 'Pause' : 'Play'}
-      >
-        {isPlaying ? '⏸ Pause' : '▶ Play'}
-      </button>
+      <div className="controls-main-group">
+        <button
+          type="button"
+          className="control-play-btn"
+          onClick={handleTogglePlayPause}
+          title={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? '⏸ Pause' : '▶ Play'}
+        </button>
+        <div className="time-display-mobile">
+          <span className="time-current">{formatTime(displayTime)}</span> / <span className="time-duration">{formatTime(duration)}</span>
+        </div>
+      </div>
 
       <div className="scrubber-container">
-        <span className="time-current">{formatTime(displayTime)}</span>
+        <span className="time-current desktop-time">{formatTime(displayTime)}</span>
         <input
           type="range"
           className="seek-slider"
@@ -129,8 +134,9 @@ export function PlaybackControls({
           onMouseUp={handleSeekCommit}
           onTouchEnd={handleSeekCommit}
           disabled={!canControl}
+          aria-label="Video seek slider"
         />
-        <span className="time-duration">{formatTime(duration)}</span>
+        <span className="time-duration desktop-time">{formatTime(duration)}</span>
       </div>
     </div>
   );

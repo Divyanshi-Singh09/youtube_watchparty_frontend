@@ -338,20 +338,18 @@ a {
 .room-content {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 360px;
   gap: 1.5rem;
-  padding: 1.5rem;
-}
-
-@media (max-width: 900px) {
-  .room-content {
-    grid-template-columns: 1fr;
-  }
+  padding: 1.25rem 1.5rem;
+  max-width: 1720px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .media-section {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* Video Player and Controls */
@@ -540,11 +538,26 @@ a {
   background: var(--primary-hover);
 }
 
+.controls-main-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.time-display-mobile {
+  display: none;
+}
+
+.desktop-time {
+  display: inline;
+}
+
 .scrubber-container {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-width: 0;
 }
 
 .time-current,
@@ -1394,4 +1407,403 @@ a {
   background: #dc2626;
   transform: translateY(-1px);
 }
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES & MOBILE DESIGN SYSTEM
+   ========================================================================== */
+
+/* 1. Large Displays & Laptops (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .room-content {
+    grid-template-columns: 1fr 330px;
+    gap: 1.15rem;
+    padding: 1rem 1.25rem;
+  }
+
+  .navbar-brand {
+    gap: 1rem;
+  }
+
+  .room-badge-group {
+    gap: 0.5rem;
+  }
+}
+
+/* 2. Tablets & Small Laptops (max-width: 860px) */
+@media (max-width: 860px) {
+  /* Navbar */
+  .room-navbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar-brand {
+    justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .room-badge-group {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .navbar-status {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 0.45rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    gap: 0.5rem;
+  }
+
+  /* Room Content Layout */
+  .room-content {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Sidebar stacks cleanly beneath media player */
+  .sidebar-section {
+    height: 520px;
+    min-height: 420px;
+    max-height: calc(100dvh - 140px);
+  }
+}
+
+/* 3. Phablets & Mobile Phones (max-width: 640px) */
+@media (max-width: 640px) {
+  /* Home Page */
+  .home-container {
+    padding: 1.5rem 0.85rem;
+  }
+
+  .brand-logo h1 {
+    font-size: 1.8rem;
+  }
+
+  .brand-logo .logo-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.15rem;
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+  }
+
+  .card-box {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  .tab-btn {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.88rem;
+  }
+
+  .form-group input {
+    font-size: 16px; /* iOS auto-zoom prevention */
+    padding: 0.75rem 0.9rem;
+    min-height: 44px;
+  }
+
+  .primary-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    min-height: 46px;
+  }
+
+  /* Room Navbar */
+  .nav-logo {
+    font-size: 1.15rem;
+  }
+
+  .room-code-tag {
+    padding: 0.25rem 0.55rem;
+    font-size: 0.8rem;
+  }
+
+  .copy-link-btn,
+  .leave-room-btn {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+
+  .status-indicator {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.55rem;
+  }
+
+  .user-greeting {
+    font-size: 0.82rem;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Video URL Form */
+  .video-url-form {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .video-url-form input {
+    font-size: 16px; /* iOS auto-zoom prevention */
+    padding: 0.75rem 0.9rem;
+    min-height: 44px;
+  }
+
+  .change-video-btn,
+  .request-video-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Playback Controls Bar */
+  .controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .controls-main-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .time-display-mobile {
+    display: block;
+    font-size: 0.85rem;
+    font-family: var(--font-family);
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .desktop-time {
+    display: none;
+  }
+
+  .scrubber-container {
+    width: 100%;
+    gap: 0;
+  }
+
+  .seek-slider {
+    width: 100%;
+    height: 6px;
+  }
+
+  /* Viewer Playback Controls */
+  .controls-bar.is-viewer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .participant-request-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .request-btn {
+    min-height: 40px;
+    padding: 0.5rem 0.9rem;
+  }
+
+  .viewer-notice {
+    width: 100%;
+    text-align: center;
+    font-size: 0.78rem;
+    margin-top: 0.2rem;
+  }
+
+  .controls-bar.is-viewer .time-display {
+    align-self: flex-end;
+    font-size: 0.82rem;
+  }
+
+  /* Sidebar Section & Tabs */
+  .sidebar-section {
+    height: 480px;
+    min-height: 400px;
+  }
+
+  .sidebar-tab-btn {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.88rem;
+    min-height: 42px;
+  }
+
+  /* Chat Box */
+  .chat-card {
+    padding: 0.75rem;
+    border-radius: 14px;
+  }
+
+  .chat-bubble-wrapper {
+    max-width: 90%;
+  }
+
+  .chat-bubble {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .chat-input-field {
+    font-size: 16px; /* iOS auto-zoom prevention */
+    padding: 0.6rem 0.75rem;
+    min-height: 42px;
+  }
+
+  .chat-send-btn {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    font-size: 1.05rem;
+  }
+
+  .chat-scroll-bottom-btn {
+    bottom: 84px;
+  }
+
+  /* Toast Popup */
+  .toast-container {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: calc(100% - 2rem);
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Autoplay Blocked Modal */
+  .autoplay-modal {
+    padding: 1.25rem 1rem;
+    max-width: 90%;
+  }
+}
+
+/* 4. Compact Mobile Devices (max-width: 420px) */
+@media (max-width: 420px) {
+  .brand-logo h1 {
+    font-size: 1.55rem;
+  }
+
+  .room-navbar {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .room-content {
+    padding: 0.5rem;
+    gap: 1rem;
+  }
+
+  .room-badge-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .room-code-tag {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.75rem;
+  }
+
+  .copy-link-btn,
+  .leave-room-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .user-greeting {
+    max-width: 170px;
+  }
+
+  .sidebar-tab-btn {
+    font-size: 0.82rem;
+    padding: 0.45rem 0.4rem;
+  }
+
+  .tab-badge {
+    font-size: 0.68rem;
+    padding: 0.05rem 0.35rem;
+  }
+
+  .tab-count-pill {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.4rem;
+  }
+
+  .quick-emoji-row {
+    padding: 0.3rem 0;
+  }
+
+  .quick-emoji-btn {
+    font-size: 1.05rem;
+    padding: 0.15rem;
+  }
+
+  .participant-name {
+    max-width: 120px;
+  }
+
+  .queue-action-btns {
+    flex-direction: column;
+  }
+}
+
+/* 5. Touch Screen Ergonomics (hover: none) */
+@media (hover: none) and (pointer: coarse) {
+  .tab-btn,
+  .sidebar-tab-btn,
+  .primary-btn,
+  .change-video-btn,
+  .request-video-btn,
+  .control-play-btn,
+  .request-btn,
+  .chat-send-btn,
+  .unblock-btn,
+  .approve-btn,
+  .reject-btn {
+    min-height: 44px;
+  }
+
+  .copy-link-btn,
+  .leave-room-btn {
+    min-height: 36px;
+  }
+
+  .quick-emoji-btn {
+    min-height: 36px;
+    min-width: 34px;
+  }
+
+  .menu-trigger-btn {
+    min-height: 38px;
+    min-width: 38px;
+  }
+
+  .approve-btn:hover,
+  .reject-btn:hover,
+  .quick-emoji-btn:hover {
+    transform: none;
+  }
+}
+
 
