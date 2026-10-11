@@ -23,6 +23,7 @@ export function useRoom(roomId, username) {
   const [connectionStatus, setConnectionStatus] = useState('connecting'); // 'connecting' | 'connected' | 'disconnected'
   const [error, setError] = useState(null);
 
+  const [messages, setMessages] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [resolvedNotification, setResolvedNotification] = useState(null);
 
@@ -60,13 +61,16 @@ export function useRoom(roomId, username) {
             return;
           }
 
-          const { userId, role, sessionToken: activeToken, participants: initialList } = response.data;
+          const { userId, role, sessionToken: activeToken, participants: initialList, messages: initialMessages } = response.data;
 
           // Persist session token for reconnects
           saveSession(roomId, { userId, sessionToken: activeToken, username });
 
           setSelf({ userId, username, role });
           setParticipants(initialList);
+          if (Array.isArray(initialMessages)) {
+            setMessages(initialMessages);
+          }
           setConnectionStatus('connected');
         }
       );
@@ -81,20 +85,45 @@ export function useRoom(roomId, username) {
       setConnectionStatus('disconnected');
     };
 
-
     const handleSyncState = (state) => {
       setSyncState(state);
+    };
+
+    const handleChatMessage = (msg) => {
+      setMessages((prev) => [...prev, msg]);
     };
 
     const handleUserJoined = (data) => {
       if (data.participants) {
         setParticipants(data.participants);
       }
+      if (data.username) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            messageId: `sys-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            type: 'system',
+            text: `${data.username} joined the party`,
+            sentAt: Date.now(),
+          },
+        ]);
+      }
     };
 
     const handleUserLeft = (data) => {
       if (data.participants) {
         setParticipants(data.participants);
+      }
+      if (data.username) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            messageId: `sys-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            type: 'system',
+            text: `${data.username} left the party`,
+            sentAt: Date.now(),
+          },
+        ]);
       }
     };
 
@@ -105,6 +134,17 @@ export function useRoom(roomId, username) {
       // If the role change is for this client, update self.role immediately (RE-2)
       if (selfRef.current && data.userId === selfRef.current.userId) {
         setSelf((prev) => (prev ? { ...prev, role: data.role } : prev));
+      }
+      if (data.username && data.role) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            messageId: `sys-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            type: 'system',
+            text: `${data.username} was promoted to ${data.role}`,
+            sentAt: Date.now(),
+          },
+        ]);
       }
     };
 
@@ -137,6 +177,7 @@ export function useRoom(roomId, username) {
     socket.on('connect', handleConnect);
     socket.on('disconnect', handleDisconnect);
     socket.on('sync_state', handleSyncState);
+    socket.on('chat_message', handleChatMessage);
     socket.on('user_joined', handleUserJoined);
     socket.on('user_left', handleUserLeft);
     socket.on('role_assigned', handleRoleAssigned);
@@ -149,12 +190,12 @@ export function useRoom(roomId, username) {
       doJoinRoom();
     }
 
-
     // 5. CLEANUP ON UNMOUNT (prevents memory leaks and duplicate listeners)
     return () => {
       socket.off('connect', handleConnect);
       socket.off('disconnect', handleDisconnect);
       socket.off('sync_state', handleSyncState);
+      socket.off('chat_message', handleChatMessage);
       socket.off('user_joined', handleUserJoined);
       socket.off('user_left', handleUserLeft);
       socket.off('role_assigned', handleRoleAssigned);
@@ -176,6 +217,12 @@ export function useRoom(roomId, username) {
     });
   };
 
+  const sendChatMessage = (message, callback) => {
+    socket.emit('chat_message', { message }, (response) => {
+      if (callback) callback(response);
+    });
+  };
+
   return {
     participants,
     self,
@@ -186,6 +233,8 @@ export function useRoom(roomId, username) {
     resolvedNotification,
     requestChange,
     resolveChange,
+    messages,
+    sendChatMessage,
   };
 }
 

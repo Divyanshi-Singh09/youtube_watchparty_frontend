@@ -15,6 +15,7 @@ import { PlaybackControls } from '../components/PlaybackControls.jsx';
 import { VideoUrlForm } from '../components/VideoUrlForm.jsx';
 import { ParticipantList } from '../components/ParticipantList.jsx';
 import { ApprovalQueue } from '../components/ApprovalQueue.jsx';
+import { ChatBox } from '../components/ChatBox.jsx';
 import { Toast } from '../components/Toast.jsx';
 import { getSession, saveSession, clearSession } from '../utils/session.js';
 import { socket } from '../services/socket.js';
@@ -43,7 +44,26 @@ export function RoomPage() {
     resolvedNotification,
     requestChange,
     resolveChange,
+    messages,
+    sendChatMessage,
   } = useRoom(username ? normalizedRoomId : '', username);
+
+  // Tabbed sidebar state (Chat vs Participants)
+  const [activeSidebarTab, setActiveSidebarTab] = useState('chat');
+  const [unreadCount, setUnreadCount] = useState(0);
+  const prevMessagesCountRef = useRef(messages?.length || 0);
+
+  useEffect(() => {
+    if (activeSidebarTab === 'people') {
+      const diff = (messages?.length || 0) - prevMessagesCountRef.current;
+      if (diff > 0) {
+        setUnreadCount((prev) => prev + diff);
+      }
+    } else {
+      setUnreadCount(0);
+    }
+    prevMessagesCountRef.current = messages?.length || 0;
+  }, [messages?.length, activeSidebarTab]);
 
   // Video container DOM ref
   const playerContainerRef = useRef(null);
@@ -242,7 +262,7 @@ export function RoomPage() {
           />
         </div>
 
-        {/* Sidebar: Staff Approval Queue + Participant List */}
+        {/* Sidebar: Staff Approval Queue + Tabbed Navigation (Chat vs People) */}
         <aside className="sidebar-section">
           <ApprovalQueue
             requests={pendingRequests}
@@ -250,14 +270,47 @@ export function RoomPage() {
             isStaff={canControl}
           />
 
-          <ParticipantList
-            participants={participants}
-            self={self}
-            onError={(msg) => {
-              setToastMessage(msg);
-              setToastType('error');
-            }}
-          />
+          <div className="sidebar-tabs-header">
+            <button
+              type="button"
+              className={`sidebar-tab-btn ${activeSidebarTab === 'chat' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveSidebarTab('chat');
+                setUnreadCount(0);
+              }}
+            >
+              <span>💬 Chat</span>
+              {unreadCount > 0 && (
+                <span className="tab-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+              )}
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-tab-btn ${activeSidebarTab === 'people' ? 'active' : ''}`}
+              onClick={() => setActiveSidebarTab('people')}
+            >
+              <span>👥 People</span>
+              <span className="tab-count-pill">{participants.length}</span>
+            </button>
+          </div>
+
+          {activeSidebarTab === 'chat' ? (
+            <ChatBox
+              messages={messages}
+              onSendMessage={sendChatMessage}
+              self={self}
+            />
+          ) : (
+            <ParticipantList
+              participants={participants}
+              self={self}
+              onError={(msg) => {
+                setToastMessage(msg);
+                setToastType('error');
+              }}
+            />
+          )}
         </aside>
       </main>
     </div>
